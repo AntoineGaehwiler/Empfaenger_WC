@@ -29,9 +29,9 @@ AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ENCODER_DT, ENCODER_CL
 
 bool occupied;
 bool rotaryPressed = false;
-bool debugMode = false;
+bool debugMode = true;
 
-uint8_t receiverAddress[] = {0x30, 0xAE, 0xA4, 0x7B, 0x79, 0x90};
+uint8_t receiverAddress[] = {0x08, 0xD1, 0xF9, 0xD3, 0x7A, 0xCC};
 esp_now_peer_info_t peerInfo;
 
 // Data for ESP-Now connection
@@ -62,17 +62,20 @@ memcpy(&myReceivedMessage, incomingData, sizeof(myReceivedMessage));
 
   occupied = myReceivedMessage.statusWC;
   if(debugMode){
+    Serial.println("Message received");
+
     Serial.println("Status von ESP32");
     Serial.println(myReceivedMessage.statusWC);
     Serial.println("Distanz gemessen");
     Serial.println(myReceivedMessage.distanzWC);
+
+    Serial.println("changeDistance bevor Sending");
+    Serial.println(myMessageToBeSent.changeDistance);
     }
 
-  if (myReceivedMessage.statusWC)
-  {
+  if (myReceivedMessage.statusWC){
     digitalWrite(led, HIGH);
-  }else
-  {
+  }else{
     digitalWrite(led, LOW);
   }
 
@@ -94,6 +97,7 @@ void setup() {
   // Set Pin to Pin 2
   pinMode(led, OUTPUT);
 
+  // Init for roatary encoder
   rotaryEncoder.begin();
   rotaryEncoder.setup(readEncoderISR);
 
