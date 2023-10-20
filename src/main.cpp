@@ -30,6 +30,7 @@ AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ENCODER_DT, ENCODER_CL
 bool occupied;
 bool rotaryPressed = false;
 bool debugMode = true;
+int distancReceived = 0;
 
 uint8_t receiverAddress[] = {0x08, 0xD1, 0xF9, 0xD3, 0x7A, 0xCC};
 esp_now_peer_info_t peerInfo;
@@ -61,16 +62,16 @@ void messageReceived(const uint8_t* macAddr, const uint8_t* incomingData, int le
 memcpy(&myReceivedMessage, incomingData, sizeof(myReceivedMessage));
 
   occupied = myReceivedMessage.statusWC;
+  distancReceived = myReceivedMessage.distanzWC;
   if(debugMode){
+    Serial.println("--------------------------------------------------");
     Serial.println("Message received");
-
-    Serial.println("Status von ESP32");
+    Serial.print("Status von ESP32\t");
     Serial.println(myReceivedMessage.statusWC);
-    Serial.println("Distanz gemessen");
+    Serial.print("Distanz gemessen\t");
     Serial.println(myReceivedMessage.distanzWC);
-
-    Serial.println("changeDistance bevor Sending");
-    Serial.println(myMessageToBeSent.changeDistance);
+    Serial.print("Eingestellter Wert\t");
+    Serial.println(rotaryEncoder.readEncoder());
     }
 
   if (myReceivedMessage.statusWC){
@@ -171,14 +172,15 @@ void loop() {
     }while(count <= PIXELCOUNT);
   }
 
-  if(debugMode){
-    Serial.println("StatusWC");
+  /*if(debugMode){
+    Serial.print("StatusWC");
     Serial.println(myReceivedMessage.statusWC);
-    Serial.println("DistanzWC");
-    Serial.println(myReceivedMessage.distanzWC);
-    Serial.println("changeDistance");
-    Serial.println(myMessageToBeSent.changeDistance);
-    Serial.println("rotaryPressed");
+    Serial.print("DistanzWC");
+    Serial.println(distancReceived);
+    Serial.print("Eingestellte Distanz");
+    Serial.println(rotaryEncoder.readEncoder());
+    Serial.print("rotaryPressed");
     Serial.println(rotaryEncoder.isEncoderButtonClicked());
-  }
+  }*/
+
 }
